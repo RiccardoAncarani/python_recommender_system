@@ -7,11 +7,12 @@ class VectorDimensionError(Exception):
         super(Exception, self).__init__(message)
         self.errors = errors
 
-
+'''
 def calculateSimilarity(x, y):
 	if(len(x) != len(y)):
 		raise VectorDimensionError("Vector must be the same size",None)
 	return cosine_similarity(np.array(x).reshape(1,len(x)),np.array(y).reshape(1,len(y)))
+'''
 
 def createJunkData():
 	return np.array([generateJunkVector(5) for i in range(5)]).T
