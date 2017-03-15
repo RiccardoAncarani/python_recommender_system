@@ -20,16 +20,18 @@ def createJunkData():
 
 def tryKNN():
 	X = createJunkData()
-	test = [0,1,2,1,5]
-	nbrs = NearestNeighbors(n_neighbors=2).fit(	X)
-	distances, indices = nbrs.kneighbors(np.array(test).T, n_neighbors=1)
-	print distances
+	test = [0,1,0,1,1]
+	nbrs = NearestNeighbors(n_neighbors=2).fit(X)
+	distances, indices = nbrs.kneighbors(np.array(test), n_neighbors=1)
+	print "Nearest element of " + str(test) + " is:"
 	print X[indices]
 
 
 
+
+
 def generateJunkVector(n):
-	return [random.random() for i in range(n)]
+	return np.array([random.randrange(0,2) for i in range(n)])
 
 if __name__ == '__main__':
 	tryKNN()
