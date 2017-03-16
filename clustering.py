@@ -4,7 +4,7 @@ import random
 from sklearn.metrics.pairwise import cosine_similarity
 
 n_features = 10
-n_samples = 1000
+n_samples = 10000
 
 def createJunkData():
 	return np.array([generateJunkVector(n_features) for i in range(n_samples)])
