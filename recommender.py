@@ -1,6 +1,10 @@
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
-import random
+import random	
+from sklearn.metrics.pairwise import cosine_similarity
+
+n_features = 10
+n_samples = 1000
 
 '''
 class VectorDimensionError(Exception):
@@ -16,15 +20,17 @@ def calculateSimilarity(x, y):
 '''
 
 def createJunkData():
-	return np.array([generateJunkVector(5) for i in range(5)]).T
+	return np.array([generateJunkVector(n_features) for i in range(n_samples)])
 
 def tryKNN():
 	X = createJunkData()
-	test = [0,1,0,1,1]
+	test = generateJunkVector(n_features)
 	nbrs = NearestNeighbors(n_neighbors=2).fit(X)
-	distances, indices = nbrs.kneighbors(np.array(test), n_neighbors=1)
+	distances, indices = nbrs.kneighbors(test.reshape(1,-1) , n_neighbors=1)
 	print "Nearest element of " + str(test) + " is:"
 	print X[indices]
+	print "The distance between the two values: "
+	print distances
 
 
 
