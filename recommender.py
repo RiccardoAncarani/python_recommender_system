@@ -25,7 +25,7 @@ def createJunkData():
 def tryKNN():
 	X = createJunkData()
 	test = generateJunkVector(n_features)
-	nbrs = NearestNeighbors(n_neighbors=2).fit(X)
+	nbrs = NearestNeighbors(n_neighbors=5).fit(X)
 	distances, indices = nbrs.kneighbors(test.reshape(1,-1) , n_neighbors=1)
 	print "Nearest element of " + str(test) + " is:"
 	print X[indices]

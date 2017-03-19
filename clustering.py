@@ -4,7 +4,7 @@ import random
 from sklearn.metrics.pairwise import cosine_similarity
 
 n_features = 10
-n_samples = 10000
+n_samples = 1000
 
 def createJunkData():
 	return np.array([generateJunkVector(n_features) for i in range(n_samples)])
@@ -18,12 +18,14 @@ def ClusterIndicesNumpy(clustNum, labels_array): #numpy
 def clustering():
 	X = createJunkData()
 	test = generateJunkVector(n_features).reshape(1,n_features)
-	km = MiniBatchKMeans(n_clusters=100)
+	km = MiniBatchKMeans(n_clusters=10)
 	km.fit(X)
 	prediction = km.predict(test)
-	print X[prediction]
+	print test
 	cluster_elements =  ClusterIndicesNumpy(prediction,km.labels_)
-	print [X[c] for c in cluster_elements]
+	res = np.array([X[c] for c in cluster_elements])
+	#print np.bitwise_xor(res,X[prediction])
+	print res
 	
 
 if __name__ == '__main__':
