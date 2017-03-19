@@ -1,4 +1,5 @@
 from sklearn.cluster import MiniBatchKMeans
+from sklearn.neighbors import NearestNeighbors
 import numpy as np
 import random	
 from sklearn.metrics.pairwise import cosine_similarity
@@ -25,8 +26,15 @@ def clustering():
 	cluster_elements =  ClusterIndicesNumpy(prediction,km.labels_)
 	res = np.array([X[c] for c in cluster_elements])
 	#print np.bitwise_xor(res,X[prediction])
-	print res
+	getKNN(res,test)
 	
+def getKNN(X,test):
+	nbrs = NearestNeighbors(n_neighbors=5).fit(X)
+	distances, indices = nbrs.kneighbors(test.reshape(1,-1) , n_neighbors=1)
+	print "Nearest element of " + str(test) + " is:"
+	print X[indices]
+	print "The distance between the two values: "
+	print distances
 
 if __name__ == '__main__':
 	clustering()
