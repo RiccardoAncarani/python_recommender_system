@@ -28,27 +28,38 @@ class Recommender:
 		km.fit(X)
 		return km
 
-	def predictAndGetElements(self,km,elements,to_predict):
-		prediction = km.predict(to_predict) # prediction is the label of the cluster
+	def predictAndGetElements(self,elements,to_predict):
+		prediction = self.km.predict(to_predict) # prediction is the label of the cluster
 		print to_predict # print the test vector for visual comparing
-		cluster_elements =  self.ClusterIndicesNumpy(prediction,km.labels_)
+		cluster_elements =  self.ClusterIndicesNumpy(prediction,self.km.labels_)
 		res = np.array([elements[c] for c in cluster_elements]) # All the elements that belongs to the predicted cluster
 		return res
 
-	def clustering(self):
-		X, test = self.generateTrainData()
-		km = self.trainModel(X)
-		res = self.predictAndGetElements(km,X,test)
-		self.getKNN(res,test) # Apply KNN to the result cluster to get the best result
+	def predict(self,to_predict):
+		res = self.predictAndGetElements(self.	X,to_predict)
+		return self.getKNN(res,to_predict) # Apply KNN to the result cluster to get the best result
+
+
+	def buildCluster(self, X = None, isTest = True ):
+		if isTest:
+			self.X, self.test = self.generateTrainData()
+		else:
+			self.X = X
+
+		self.km = self.trainModel(self.X) # train k mean model 
+		
 		
 	def getKNN(self,X,test):
 		nbrs = NearestNeighbors(n_neighbors=5).fit(X) # choose the 5 nearest neighbors
 		distances, indices = nbrs.kneighbors(test.reshape(1,-1) , n_neighbors=1) # but take only the closest
-		print "Nearest element of " + str(test) + " is:"
-		print X[indices]
+		#print "Nearest element of " + str(test) + " is:"
+		return X[indices]
 		# This is the proof that the best match is in the cluster
 
 
 if __name__ == '__main__':
 	r = Recommender()
-	r.clustering()
+	X, test = r.generateTrainData()
+
+	r.buildCluster(X, isTest = False)
+	print r.predict(test)
