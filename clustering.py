@@ -2,11 +2,20 @@ from sklearn.cluster import MiniBatchKMeans
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
 import random	
+import os.path
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.externals import joblib
 
 class Recommender:
 	n_features = 5
 	n_samples = 1000
+	model_name = 'model.pkl'
+
+	def saveModel(self,km):
+		joblib.dump(km, self.model_name) 
+
+	def restoreModel(self):
+		self.km = joblib.load(self.model_name)
 
 	def createJunkData(self):
 		return np.array([self.generateJunkVector(self.n_features) for i in range(self.n_samples)])
@@ -26,6 +35,7 @@ class Recommender:
 	def trainModel(self,X):
 		km = MiniBatchKMeans(n_clusters=10)
 		km.fit(X)
+		self.saveModel(km)
 		return km
 
 	def predictAndGetElements(self,elements,to_predict):
@@ -41,13 +51,17 @@ class Recommender:
 
 
 	def buildCluster(self, X = None, isTest = True ):
+		# Check if this is a test run or not
 		if isTest:
 			self.X, self.test = self.generateTrainData()
 		else:
 			self.X = X
 
-		self.km = self.trainModel(self.X) # train k mean model 
-		
+		# Check if a model is already present
+		if not os.path.isfile(self.model_name):
+			self.km = self.trainModel(self.X) # train k mean model 
+		else:
+			self.restoreModel()
 		
 	def getKNN(self,X,test):
 		nbrs = NearestNeighbors(n_neighbors=5).fit(X) # choose the 5 nearest neighbors
