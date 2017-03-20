@@ -5,17 +5,28 @@ import random
 import os.path
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.externals import joblib
+import pickle
 
 class Recommender:
-	n_features = 5
-	n_samples = 1000
+	n_features = 10
+	n_samples = 500
 	model_name = 'model.pkl'
+	train_object = 'train.pkl'
 
-	def saveModel(self,km):
+	def saveModel(self,km,X):
+		'''
+		Save the current model
+		'''
+		joblib.dump(X, self.train_object)
 		joblib.dump(km, self.model_name) 
+		
 
 	def restoreModel(self):
+		'''
+		Restore the model
+		'''
 		self.km = joblib.load(self.model_name)
+		self.X = joblib.load(self.train_object)
 
 	def createJunkData(self):
 		return np.array([self.generateJunkVector(self.n_features) for i in range(self.n_samples)])
@@ -32,13 +43,19 @@ class Recommender:
 		test = self.generateJunkVector(self.n_features).reshape(1,self.n_features)
 		return X,test
 
-	def trainModel(self,X):
+	def fit(self,X):
 		km = MiniBatchKMeans(n_clusters=10)
 		km.fit(X)
-		self.saveModel(km)
+		self.saveModel(km,X)
 		return km
 
 	def predictAndGetElements(self,elements,to_predict):
+		'''
+		Predict a value and returns all elements that beongs
+		to the predicted cluster
+		elements = the train data, where to extract elements
+		to_predict = the vector to be predicted
+		'''
 		prediction = self.km.predict(to_predict) # prediction is the label of the cluster
 		print to_predict # print the test vector for visual comparing
 		cluster_elements =  self.ClusterIndicesNumpy(prediction,self.km.labels_)
@@ -46,7 +63,8 @@ class Recommender:
 		return res
 
 	def predict(self,to_predict):
-		res = self.predictAndGetElements(self.	X,to_predict)
+		to_predict = np.array(to_predict)
+		res = self.predictAndGetElements(self.X,to_predict)
 		return self.getKNN(res,to_predict) # Apply KNN to the result cluster to get the best result
 
 
@@ -59,7 +77,7 @@ class Recommender:
 
 		# Check if a model is already present
 		if not os.path.isfile(self.model_name):
-			self.km = self.trainModel(self.X) # train k mean model 
+			self.km = self.fit(self.X) # train k mean model 
 		else:
 			self.restoreModel()
 		
