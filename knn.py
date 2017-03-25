@@ -6,11 +6,16 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.externals import joblib
 from test_data import TestData
 
-class Knn:
+class Recommender:
 
-	def fit(self, train):
+	def __init__(self, train):
 		self.train = train
-		self.nbrs = NearestNeighbors(n_neighbors=10).fit(train) # choose the 5 nearest neighbors
+
+	def vector_model(self,to_predict):
+		return self.train[np.argmax(cosine_similarity(self.train,to_predict))]
+
+	def fit(self):
+		self.nbrs = NearestNeighbors(n_neighbors=10).fit(self.train) # choose the 5 nearest neighbors
 
 	def predict(self, to_predict):
 		indices,distances = self.getKNN(to_predict)
@@ -19,12 +24,13 @@ class Knn:
 	def getKNN(self,to_predict):
 		distances, indices = self.nbrs.kneighbors(test.reshape(1,-1) , n_neighbors=10) # but take only the closest
 		return indices,distances
-		# This is the proof that the best match is in the cluster
+		# his is the proof that the best match is in the cluster
 
 if __name__ == '__main__':
-	knn = Knn()
+	
 	t = TestData()
 	X, test = t.generateTrainData(3700,1000)
-	knn = Knn()
-	knn.fit(X)
+	knn = Recommender(X)
+	knn.fit()
 	print knn.predict(test)
+	print knn.vector_model(test)
