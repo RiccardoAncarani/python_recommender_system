@@ -26,10 +26,12 @@ def getPurchasedItems(customer_name):
 def countItems():
 	return session.query(Item).count()
 
+# TODO: handle users without items
 def buildPurchcaseVector(customer_name):
-	total_items = countItems()
+	total_items = countItems() +1
 	v = np.zeros(total_items)
 	purchases = getPurchasedItems(customer_name)
+	print len(purchases)
 	if purchases:
 		v[purchases] = 1
 		return v[1:]
