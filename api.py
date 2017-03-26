@@ -4,6 +4,7 @@ from recommender.recommender import Recommender
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Customer, Item, Purchcase
+import numpy as np
 
 app = Flask(__name__)
 engine = create_engine('sqlite:///customers.db')
@@ -47,18 +48,36 @@ def addPurchase(customer_name, item_name):
 	else:
 		return jsonify({"error" : "invalid combination of customer/item"})
 
-@app.route('/api/get/items/<string:customer_name>')
-def getItemsFromUser(customer_name):
+def getPurchasedItems(customer_name):
 	customer = session.query(Customer).filter(Customer.name == customer_name)[:1]
 	if customer:
-		response = {
-			"items" : list()
-		}
-		items = session.query(Purchcase).filter(Purchcase.customer_id == customer[0].id)
-		[response['items'].append(item.item_id) for item in items]
-		return jsonify(response)
+		items_list = []
+		purchases = session.query(Purchcase).filter(Purchcase.customer_id == customer[0].id)
+		[items_list.append(item.item_id) for item in purchases]
+		return items_list
+	else:
+		return None
+
+@app.route('/api/get/items/<string:customer_name>')
+def getItemsFromUser(customer_name):
+	items = getPurchasedItems(customer_name)
+	if items:
+		return jsonify({"response": items})
 	else:
 		return jsonify({"error": "no customer found"})
+
+def countItems():
+	return session.query(Item).count()
+
+def buildPurchcaseVector(customer_name):
+	total_items = countItems()
+	v = np.zeros(total_items)
+	purchases = getPurchasedItems(customer_name)
+	if purchases:
+		v[purchases] = 1
+		return v
+	else:
+		return None
 
 if __name__ == '__main__':
 	app.debug = True
