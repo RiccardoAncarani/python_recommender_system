@@ -44,6 +44,21 @@ def addPurchase(customer_name, item_name):
 		"status" : "insert ok"
 		}
 		return jsonify(response)	
+	else:
+		return jsonify({"error" : "invalid combination of customer/item"})
+
+@app.route('/api/get/items/<string:customer_name>')
+def getItemsFromUser(customer_name):
+	customer = session.query(Customer).filter(Customer.name == customer_name)[:1]
+	if customer:
+		response = {
+			"items" : list()
+		}
+		items = session.query(Purchcase).filter(Purchcase.customer_id == customer[0].id)
+		[response['items'].append(item.item_id) for item in items]
+		return jsonify(response)
+	else:
+		return jsonify({"error": "no customer found"})
 
 if __name__ == '__main__':
 	app.debug = True
