@@ -21,7 +21,7 @@ class Purchcase(Base):
 	__tablename__ = 'purchcase'
 	id = Column(Integer, primary_key = True)
 	customer_id = Column(Integer, ForeignKey('customer.id'))
-	purchcase_id = Column(Integer, ForeignKey('item.id'))
+	item_id = Column(Integer, ForeignKey('item.id'))
 	customer = relationship(Customer)
 	item = relationship(Item)
 
