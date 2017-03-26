@@ -113,6 +113,8 @@ def getOldMatrix():
 def updateMatrix():
 	global matrix
 	matrix = buildGlobalMatrix()
+	global r
+	r = Recommender(matrix)
 	return jsonify({"response": "Matrix updated"})
 
 @app.route('/api/predict/<string:customer_name>')
