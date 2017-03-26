@@ -75,9 +75,20 @@ def buildPurchcaseVector(customer_name):
 	purchases = getPurchasedItems(customer_name)
 	if purchases:
 		v[purchases] = 1
-		return v
+		return v[1:]
 	else:
 		return None
+
+@app.route('/api/get/vector/<string:customer_name>')
+def getUserVector(customer_name):
+	v = buildPurchcaseVector(customer_name)
+	try:
+		if len(v) > 0:
+			return jsonify({"response" : str(v)})
+		else:
+			return jsonify({"error" : ""})
+	except:
+		return jsonify({"error" : ""})
 
 if __name__ == '__main__':
 	app.debug = True
