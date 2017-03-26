@@ -45,6 +45,8 @@ def buildGlobalMatrix():
 	return np.array(vectors)
 # ------------------------------------------------------
 matrix = buildGlobalMatrix() # build the initial matrix
+r = Recommender(matrix) # pass the matrix to the model
+
 
 @app.route('/api/new/customer/<string:name>')
 def addCustomer(name):
@@ -118,7 +120,6 @@ def predict(customer_name):
 	vector = buildPurchcaseVector(customer_name)
 
 	if len(vector)>0:
-		r = Recommender(matrix)
 		prediction = r.vector_model(vector)
 		return jsonify({"response": str(prediction)})
 	else:

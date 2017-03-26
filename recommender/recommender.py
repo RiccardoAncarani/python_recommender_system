@@ -14,8 +14,6 @@ class Recommender:
 		self.train = train
 
 	def vector_model(self,to_predict):
-		#return self.train[np.argmax(cosine_similarity(np.delete(self.train,(np.where(np.all(self.train == to_predict, axis=1))),axis=0),to_predict))]
-		#return np.argpartition(cosine_similarity(self.train,to_predict), 2)
 		cos = cosine_similarity(self.train,to_predict)
 		return self.train[(heapq.nlargest(2,xrange(len(cos)),cos.take))[1:][0]]
 
