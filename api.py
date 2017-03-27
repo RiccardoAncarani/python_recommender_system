@@ -11,6 +11,8 @@ engine = create_engine('sqlite:///customers.db',connect_args={'check_same_thread
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
+buffer = 2
+events = 0
 
 # -------------------------- HELPERS ---------------------
 def getPurchasedItems(customer_name):
@@ -28,7 +30,7 @@ def countItems():
 
 # TODO: handle users without items
 def buildPurchcaseVector(customer_name):
-	total_items = countItems() +1
+	total_items = countItems() +1 # questo ancora mi e' molto oscuro, ma funziona
 	v = np.zeros(total_items)
 	purchases = getPurchasedItems(customer_name)
 	print len(purchases)
@@ -45,6 +47,17 @@ def buildGlobalMatrix():
 		v = buildPurchcaseVector(customer.name)
 		vectors.append(v)
 	return np.array(vectors)
+
+def insertEvent():
+	global events
+	events = events +1
+	if events >= buffer:
+		global matrix
+		matrix = buildGlobalMatrix()
+		global r 
+		r = Recommender(matrix)
+		print "Updating matrix"
+
 # ------------------------------------------------------
 matrix = buildGlobalMatrix() # build the initial matrix
 r = Recommender(matrix) # pass the matrix to the model
@@ -55,6 +68,7 @@ def addCustomer(name):
 	customer = Customer(name = name)
 	session.add(customer)
 	session.commit()
+	insertEvent()
 	response = {
 		"status" : "insert ok"
 	}
@@ -65,6 +79,7 @@ def addItem(name):
 	item = Item(name = name)
 	session.add(item)
 	session.commit()
+	insertEvent()
 	response = {
 		"status" : "insert ok"
 	}
@@ -79,6 +94,7 @@ def addPurchase(customer_name, item_name):
 		purchcase = Purchcase(customer_id = customer[0].id, item_id = item[0].id)
 		session.add(purchcase)
 		session.commit()
+		insertEvent()
 		response = {
 		"status" : "insert ok"
 		}
