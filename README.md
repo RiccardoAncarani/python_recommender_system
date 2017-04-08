@@ -64,7 +64,7 @@ curl http://127.0.0.1:5000/api/update_matrix
 
 If you look at the source, there are more endpoints but they are just for debugging purpose.
 
-# Defining how the matrix would be sensitive to updates
+# Defining how the matrix is sensitive to updates
 You'll have to keep the global matrix updated, otherwise this system is pretty useless.
 
 I choose to have a buffer of insert operation before the matrix is rebuilt, you have the freedom to edit this parameter in order to meet your needs:
