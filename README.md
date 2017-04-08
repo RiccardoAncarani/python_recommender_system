@@ -19,8 +19,7 @@ This framework is built with Flask, and uses SQLAlchemy for ORM
 ## /api/new/customer/<name>
 Insert a new customer into the DB
 
-```
-#!bash
+```bash
 curl http://127.0.0.1:5000/api/new/customer/riccardo
 { "status" : "insert ok" }
 
@@ -29,8 +28,7 @@ curl http://127.0.0.1:5000/api/new/customer/riccardo
 ## /api/new/item/<name>
 Insert a new item into the DB
 
-```
-#!bash
+```bash
 curl http://127.0.0.1:5000/api/new/item/hammer
 { "status" : "insert ok" }
 ```
@@ -38,8 +36,7 @@ curl http://127.0.0.1:5000/api/new/item/hammer
 ## /api/new/purchcase/<customer>/<item>
 Insert a new event, <customer> bought <item>
 
-```
-#!bash
+```bash
 curl http://127.0.0.1:5000/api/new/purchcase/riccardo/hammer
 { "status" : "insert ok" }
 ```
@@ -49,8 +46,7 @@ Get a prediction for the user named <customer>, return the vector of the nearest
 
 Now it just consider the nearest user, but the assumption that the nearest user necessarily has *more* items than <customer> is just wrong, I'll implement it ASAP.
 
-```
-#!bash
+```bash
 curl http://127.0.0.1:5000/api/predict/riccardo
 { "response" : "apparently meaningless vector" }
 ```
@@ -60,8 +56,7 @@ This API update the global matrix that holds all the user vectors.
 
 His aim is to provide a manual way to keeping the matrix updated just when is needed, otherwise the matrix would be rebuilt every insertion into the DB.
 
-```
-#!bash
+```bash
 curl http://127.0.0.1:5000/api/update_matrix
 { "response" : "Matrix updated" }
 ```
@@ -74,8 +69,7 @@ You'll have to keep the global matrix updated, otherwise this system is pretty u
 
 I choose to have a buffer of insert operation before the matrix is rebuilt, you have the freedom to edit this parameter in order to meet your needs:
 
-```
-#!python
+```python
 ...
 buffer = 2 # This is the number of insert events before an update
 events = 0 # This is the global counter of insert events
