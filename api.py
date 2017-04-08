@@ -33,7 +33,6 @@ def buildPurchcaseVector(customer_name):
 	total_items = countItems() +1 # questo ancora mi e' molto oscuro, ma funziona
 	v = np.zeros(total_items)
 	purchases = getPurchasedItems(customer_name)
-	print len(purchases)
 	if purchases:
 		v[purchases] = 1
 		return v[1:]
@@ -141,7 +140,9 @@ def predict(customer_name):
 
 	if len(vector)>0:
 		prediction = r.vector_model(vector)
-		return jsonify({"response": str(prediction)})
+		indices = zip(*([(i+1,x) for (i,x) in enumerate(prediction) if x != 0]))[0]
+		products = session.query(Item).filter(Item.id.in_(indices)).all()
+		return jsonify({"response": str([p.name for p in products])})
 	else:
 		return jsonify({"error": "No customer found"})	
 
